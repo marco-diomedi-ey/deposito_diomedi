@@ -130,7 +130,7 @@ def configuration_page():
                 success, result = test_azure_connection(endpoint, api_key)
                 
                 if success:
-                    st.success("✅ Connection successful! You can now start chatting.")
+                    st.success("✅ Connection successful! You can now start")
                     # Store credentials in session state
                     st.session_state.azure_endpoint = endpoint
                     st.session_state.azure_api_key = api_key
