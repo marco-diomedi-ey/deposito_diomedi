@@ -51,7 +51,8 @@ coverage.xml
 .pytest_cache/
 cover/
 datasets/*
-
+refactored_faiss_code/faiss_db/*
+refactored_faiss_code/docs/*
 # Translations
 *.mo
 *.pot
