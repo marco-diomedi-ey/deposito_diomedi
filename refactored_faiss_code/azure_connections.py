@@ -1,10 +1,12 @@
 from __future__ import annotations
-import os
 
-from langchain_openai import AzureOpenAIEmbeddings
-from langchain.chat_models import init_chat_model
-from utils import Settings
+import os
 import warnings
+
+from langchain.chat_models import init_chat_model
+from langchain_openai import AzureOpenAIEmbeddings
+
+from utils import Settings
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -21,6 +23,7 @@ def get_azure_embedding_model(settings: Settings = SETTINGS) -> AzureOpenAIEmbed
         # chunk_size=settings.chunk_size,
         validate_base_url=True,
     )
+
 
 def get_llm_from_lmstudio():
     """
@@ -45,4 +48,9 @@ def get_llm_from_lmstudio():
         )
 
     # model_provider="openai" perché l'endpoint è OpenAI-compatible
-    return init_chat_model(model_name, api_key=api_key, api_version=api_version, model_provider="azure_openai")
+    return init_chat_model(
+        model_name,
+        api_key=api_key,
+        api_version=api_version,
+        model_provider="azure_openai",
+    )

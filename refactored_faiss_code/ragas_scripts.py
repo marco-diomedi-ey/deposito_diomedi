@@ -1,15 +1,18 @@
-from ragas import evaluate, EvaluationDataset
-from ragas.metrics import (
-    context_precision,   # "precision@k" sui chunk recuperati
-    context_recall,      # copertura dei chunk rilevanti
-    faithfulness,        # ancoraggio della risposta al contesto
-    answer_relevancy,    # pertinenza della risposta vs domanda
-    answer_correctness,  # usa questa solo se hai ground_truth
-)
+from typing import List
+
+from ragas import EvaluationDataset, evaluate
+from ragas.metrics import \
+    answer_correctness  # usa questa solo se hai ground_truth
+from ragas.metrics import \
+    answer_relevancy  # pertinenza della risposta vs domanda
+from ragas.metrics import \
+    context_precision  # "precision@k" sui chunk recuperati
+from ragas.metrics import context_recall  # copertura dei chunk rilevanti
+from ragas.metrics import faithfulness  # ancoraggio della risposta al contesto
 
 from rag_structure import get_contexts_for_question
-from typing import List
 from utils import Settings
+
 
 def build_ragas_dataset(
     questions: List[str],
@@ -39,36 +42,36 @@ def build_ragas_dataset(
         dataset.append(row)
     return dataset
 
-def ragas_evaluation(question: str, chain, llm, embeddings, retriever, settings: Settings):
-        questions = [question]
-        dataset = build_ragas_dataset(
-        questions=questions,
-        retriever=retriever,
-        chain=chain,
-        k=settings.k
+
+def ragas_evaluation(
+    question: str, chain, llm, embeddings, retriever, settings: Settings
+):
+    questions = [question]
+    dataset = build_ragas_dataset(
+        questions=questions, retriever=retriever, chain=chain, k=settings.k
     )
 
-        evaluation_dataset = EvaluationDataset.from_list(dataset)
+    evaluation_dataset = EvaluationDataset.from_list(dataset)
 
-        # 7) Scegli le metriche
-        metrics = [
-                #     context_precision, 
-                #    context_recall, 
-                   faithfulness, 
-                   answer_relevancy
-                   ]
-        # Aggiungi correctness solo se tutte le righe hanno ground_truth
-        if all("ground_truth" in row for row in dataset):
-            metrics.append(answer_correctness)
+    # 7) Scegli le metriche
+    metrics = [
+        #     context_precision,
+        #    context_recall,
+        faithfulness,
+        answer_relevancy,
+    ]
+    # Aggiungi correctness solo se tutte le righe hanno ground_truth
+    if all("ground_truth" in row for row in dataset):
+        metrics.append(answer_correctness)
 
-        # 8) Esegui la valutazione con il TUO LLM e le TUE embeddings
-        ragas_result = evaluate(
-            dataset=evaluation_dataset,
-            metrics=metrics,
-            llm=llm,                 # passa l'istanza LangChain del tuo LLM (LM Studio)
-            embeddings=embeddings,  # o riusa 'embeddings' creato sopra
-        )
+    # 8) Esegui la valutazione con il TUO LLM e le TUE embeddings
+    ragas_result = evaluate(
+        dataset=evaluation_dataset,
+        metrics=metrics,
+        llm=llm,  # passa l'istanza LangChain del tuo LLM (LM Studio)
+        embeddings=embeddings,  # o riusa 'embeddings' creato sopra
+    )
 
-        df = ragas_result.to_pandas()
-        cols = ["faithfulness", "answer_relevancy"]
-        return df[cols].round().to_string(index=False)
+    df = ragas_result.to_pandas()
+    cols = ["faithfulness", "answer_relevancy"]
+    return df[cols].round().to_string(index=False)
