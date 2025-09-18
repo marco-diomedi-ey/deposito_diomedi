@@ -373,7 +373,7 @@ def web_search_page():
                         
                         # Show metrics
                         with st.expander("📊 RAGAS Metrics"):
-                            st.write(message["metrics"])
+                            st.write(metrics)
                         
                     except Exception as e:
                         error_msg = f"Error generating response: {e}"

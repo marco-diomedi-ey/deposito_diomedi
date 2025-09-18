@@ -53,6 +53,7 @@ cover/
 datasets/*
 refactored_faiss_code/faiss_db/*
 refactored_faiss_code/docs/*
+faiss_db/*
 # Translations
 *.mo
 *.pot
