@@ -10,7 +10,9 @@ from dotenv import load_dotenv
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import (CSVLoader, PyMuPDFLoader,
-                                                  UnstructuredImageLoader)
+                                                  UnstructuredImageLoader, 
+                                                  UnstructuredMarkdownLoader,
+                                                  TextLoader)
 
 load_dotenv()
 
@@ -20,13 +22,13 @@ class Settings:
     # Persistenza FAISS
     persist_dir: str = "./faiss_db/default"
     # Text splitting
-    chunk_size: int = 200
-    chunk_overlap: int = 100
+    chunk_size: int = 800
+    chunk_overlap: int = 350
     # Retriever (MMR)
     search_type: str = "mmr"  # "mmr" o "similarity"
     k: int = 4  # risultati finali
     fetch_k: int = 20  # candidati iniziali (per MMR)
-    mmr_lambda: float = 0.3  # 0 = diversificazione massima, 1 = pertinenza massima
+    mmr_lambda: float = 0.6  # 0 = diversificazione massima, 1 = pertinenza massima
     # Embedding
     hf_model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
     # LM Studio (OpenAI-compatible)
@@ -73,6 +75,10 @@ def load_documents(file_paths: List[str]) -> List[Document]:
             loader = PyMuPDFLoader(file_path)
         elif ext == "csv":
             loader = CSVLoader(file_path)
+        elif ext == "md":
+            loader = UnstructuredMarkdownLoader(file_path)
+        elif ext == "txt":
+            loader = TextLoader(file_path)
         elif ext in ["png", "jpg", "jpeg", "bmp", "gif", "tiff"]:
             loader = UnstructuredImageLoader(file_path)
         else:
@@ -132,12 +138,14 @@ def scan_docs_folder(docs_dir: str = "docs") -> List[str]:
     supported_extensions = {
         ".pdf",
         ".csv",
+        ".md",
         ".png",
         ".jpg",
         ".jpeg",
         ".bmp",
         ".gif",
         ".tiff",
+        ".txt"
     }
     file_paths = []
 

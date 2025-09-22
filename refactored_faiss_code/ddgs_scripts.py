@@ -132,14 +132,14 @@ def web_search_and_format(path: str):
 
                     for line in lines:
                         line = line.strip()
-                        # Mantieni solo linee con contenuto sostanziale
-                        if (
-                            len(line) > 30
-                            and not re.match(r"^[A-Z\s]+$", line)  # Non solo maiuscole
-                            and not re.match(r"^\d+$", line)  # Non solo numeri
-                            and len(line.split()) > 3
-                        ):  # Almeno 4 parole
-                            content_lines.append(line)
+                        # # Mantieni solo linee con contenuto sostanziale
+                        # if (
+                        #     len(line) > 30
+                        #     and not re.match(r"^[A-Z\s]+$", line)  # Non solo maiuscole
+                        #     and not re.match(r"^\d+$", line)  # Non solo numeri
+                        #     and len(line.split()) > 3
+                        # ):  # Almeno 4 parole
+                        content_lines.append(line)
 
                     final_content = " ".join(content_lines)
 

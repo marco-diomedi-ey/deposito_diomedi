@@ -110,7 +110,7 @@ def local_documents_page():
         
         uploaded_files = st.file_uploader(
             "Choose files", 
-            type=['pdf', 'csv', 'png', 'jpg', 'jpeg', 'bmp', 'gif', 'tiff'],
+            type=['pdf', 'csv', 'md', 'png', 'jpg', 'jpeg', 'bmp', 'gif', 'tiff'],
             accept_multiple_files=True
         )
         

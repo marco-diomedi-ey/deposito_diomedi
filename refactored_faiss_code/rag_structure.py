@@ -22,11 +22,11 @@ def build_rag_chain(llm, retriever):
     Costruisce la catena RAG (retrieval -> prompt -> LLM) con citazioni e regole anti-hallucination.
     """
     system_prompt = (
-        "Sei un assistente esperto. Rispondi in italiano. "
-        "Usa esclusivamente il CONTENUTO fornito nel contesto. "
-        "Se l'informazione non è presente, dichiara che non è disponibile. "
-        "Includi citazioni tra parentesi quadre nel formato [source:...]. "
-        "Sii conciso, accurato e tecnicamente corretto."
+        "You are an expert assistant for legal documents. Answer in English. "
+        "Use exclusively the CONTENT provided in the context. "
+        "If the information is not available, declare that it is not available. "
+        "Include citations in square brackets in the format [source:...]. "
+        "Be concise, accurate and technically correct."
     )
 
     prompt = ChatPromptTemplate.from_messages(
@@ -34,14 +34,14 @@ def build_rag_chain(llm, retriever):
             ("system", system_prompt),
             (
                 "human",
-                "Domanda:\n{question}\n\n"
-                "Contesto (estratti selezionati):\n{context}\n\n"
-                "Istruzioni:\n"
-                "1) Rispondi solo con informazioni contenute nel contesto. Immedesimati in un mondo fittizio dove le informazioni vere sono quelle del contesto fornito. \n"
-                "2) Cita sempre le fonti pertinenti nel formato [source:FILE].\n"
-                "3) Se la risposta non è nel contesto, scrivi: 'Non è presente nel contesto fornito.' \n"
-                "4) Se la risposta è ambigua o incompleta, chiedi ulteriori chiarimenti all'utente. \n"
-                "5) Se la domanda riguarda informazioni contrarie al contesto, scrivi la risposta corretta secondo il contesto.\n",
+                "Question:\n{question}\n\n"
+                "Context (selected excerpts):\n{context}\n\n"
+                "Instructions:\n"
+                "1) Answer only with information contained in the context. Immerse yourself in a fictional world where the true information is that provided in the context. \n"
+                "2) Always cite relevant sources in the format [source:FILE, PARAGRAPH].\n"
+                "3) If the answer is not in the context, write: 'Not present in the provided context.' \n"
+                "4) If the answer is ambiguous or incomplete, ask the user for further clarification. \n"
+                "5) If the question concerns information contrary to the context, write the correct answer according to the context.\n",
             ),
         ]
     )
