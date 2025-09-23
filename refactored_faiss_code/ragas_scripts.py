@@ -44,24 +44,25 @@ def build_ragas_dataset(
 
 
 def ragas_evaluation(
-    question: str, chain, llm, embeddings, retriever, settings: Settings
+    questions: list, chain, llm, embeddings, retriever, settings: Settings, ground_truth=None
 ):
-    questions = [question]
+    questions = questions
     dataset = build_ragas_dataset(
-        questions=questions, retriever=retriever, chain=chain, k=settings.k
+        questions=questions, retriever=retriever, chain=chain, k=settings.k, ground_truth=ground_truth
     )
+    print(dataset)
 
     evaluation_dataset = EvaluationDataset.from_list(dataset)
 
     # 7) Scegli le metriche
     metrics = [
-        #     context_precision,
-        #    context_recall,
+        context_precision,
+        context_recall,
         faithfulness,
-        answer_relevancy,
+        answer_relevancy
     ]
     # Aggiungi correctness solo se tutte le righe hanno ground_truth
-    if all("ground_truth" in row for row in dataset):
+    if all("reference" in row for row in dataset):
         metrics.append(answer_correctness)
 
     # 8) Esegui la valutazione con il TUO LLM e le TUE embeddings
@@ -71,7 +72,8 @@ def ragas_evaluation(
         llm=llm,  # passa l'istanza LangChain del tuo LLM (LM Studio)
         embeddings=embeddings,  # o riusa 'embeddings' creato sopra
     )
+    # print(ragas_result)
 
     df = ragas_result.to_pandas()
-    cols = ["faithfulness", "answer_relevancy"]
-    return df[cols].round().to_string(index=False)
+    cols = ["faithfulness", "answer_relevancy", "context_precision", "context_recall", "answer_correctness"]
+    return df[cols].round(4).to_string(index=False)

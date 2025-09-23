@@ -33,7 +33,7 @@ def main():
     )
     if req == "n":
         # docs = simulate_corpus()
-        file_paths = scan_docs_folder("docs")
+        file_paths = scan_docs_folder("docs_test")
         docs = load_documents(file_paths)
         vector_store = load_or_build_vectorstore(settings, embeddings, docs)
     else:
@@ -57,25 +57,43 @@ def main():
     # 4) Catena RAG
     chain = build_rag_chain(llm, retriever)
 
-    while True:
-        question = input("Inserisci la tua domanda (o 'exit'/'quit'/'q' per uscire): ")
+    # while True:
+    # question = input("Inserisci la tua domanda (o 'exit'/'quit'/'q' per uscire): ")
+    questions = [
+        "Qual è il sogno dell'aquila astronata?",
+        "Che dieta pratica il leone vegano?",
+        "Di che colore è un cavallo felice?",
+        "Quando sparisce il pappagallo invisibile?",
+    ]
 
-        # Controlla se l'utente vuole uscire
-        if question.lower().strip() in ["exit", "quit", "q", "esci"]:
-            print("👋 Arrivederci!")
-            break
+    ground_truth = {
+        questions[0]: """L'aquila astronauta possiede il sogno di esplorare lo spazio.""",
+        questions[1]: """Il leone vegano, una specie di leone molto rara ha scelto una dieta completamente vegana, nutrendosi 
+esclusivamente di arcobaleni e fiori di zucchero.""",
+        questions[2]: """Un
+cavallo felice appare come un arcobaleno vivente, mentre uno arrabbiato diventa completamente
+trasparente.""",
+        questions[3]: """Il pappagallo invisibile sparisce 
+completamente alla vista quando percepisce la parola “banana”""",
+    }
 
+    # Controlla se l'utente vuole uscire
+    # if question.lower().strip() in ["exit", "quit", "q", "esci"]:
+    #     print("👋 Arrivederci!")
+    #     break
+
+    for question in questions:
         print("=" * 80)
         print("Q:", question)
         print("-" * 80)
         ans = rag_answer(question, chain)
         print(ans)
-        print()
+    print()
 
-        rag_eval = ragas_evaluation(
-            question, chain, llm, embeddings, retriever, settings
-        )
-        print("\n METRICHE OTTENUTE:\n", rag_eval)
+    rag_eval = ragas_evaluation(
+        questions, chain, llm, embeddings, retriever, settings, ground_truth=ground_truth
+    )
+    print("\n METRICHE OTTENUTE:\n", rag_eval)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,14 @@
+web_research_task:
+  description: >
+    Conduct a thorough web research about {question}
+    Make sure you find any interesting and relevant information given the context of the question
+  expected_output: >
+    A list with 10 bullet points of the most relevant information about {question}
+  agent: web_researcher
+
+write_answer:
+  description: >
+    Answer the user's {question} in a clear and concise manner.
+  expected_output: >
+    A well-reasoned response to the user's question, demonstrating a deep understanding of ethical principles.
+  agent: answer_writer

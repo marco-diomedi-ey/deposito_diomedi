@@ -1,0 +1,9 @@
+review_task:
+  description: >
+    Analyze the following question for ethical considerations: {question}
+    Consider various perspectives
+  expected_output: >
+    A json object with:
+    - "is_ethical": true/false
+    - "reasoning": detailed explanation of the ethical analysis
+  agent: reviewer
