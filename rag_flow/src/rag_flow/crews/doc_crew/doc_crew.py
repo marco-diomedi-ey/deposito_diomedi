@@ -72,7 +72,7 @@ class DocCrew():
         """
         return Task(
             config=self.tasks_config["doc_redaction_task"],  # type: ignore[index]
-            output_file="output/redacted_document.md"
+            
         )
 
     @crew

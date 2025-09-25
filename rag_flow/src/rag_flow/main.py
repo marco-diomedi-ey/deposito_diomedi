@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from pydantic import BaseModel
 from crewai.flow import Flow, listen, start, router
+from rag_flow.crews.bias_crew.bias_crew import BiasCrew
 from rag_flow.crews.poem_crew.rag_crew import AeronauticRagCrew
 from rag_flow.crews.web_crew.web_crew import WebCrew
 from rag_flow.crews.doc_crew.doc_crew import DocCrew
@@ -42,6 +43,8 @@ class AeronauticRagState(BaseModel):
     rag_result: str = ""
     web_result: str = ""
     all_results: str = ""
+    document: str = ""
+    final_doc: str = ""
 
 class AeronauticRagFlow(Flow[AeronauticRagState]):
     """
@@ -124,7 +127,7 @@ class AeronauticRagFlow(Flow[AeronauticRagState]):
         self.state.question_input = question
 
     @router(generate_question)
-    def question_analysis(self):
+    def aeronautic_question_analysis(self):
         """
         Validate question relevance to aeronautics using Azure OpenAI.
         
@@ -182,9 +185,73 @@ class AeronauticRagFlow(Flow[AeronauticRagState]):
         if 'true' in res:
             return "success"
         else:
+            print("Question not relevant to aeronautics, please try again.")
             return "retry"
 
-    @listen("success")
+
+    @router("success")
+    def ethic_question_analysis(self):
+        """
+        Validate question relevance to aeronautics using Azure OpenAI.
+        
+        Analyzes the user's question to determine if it's relevant to aeronautics
+        using Azure OpenAI GPT-4o model. Routes the flow based on validation results
+        to ensure only aeronautic questions proceed to full analysis.
+        
+        Returns
+        -------
+        str
+            Routing decision:
+            - "success": Question is aeronautic-relevant, proceed with analysis
+            - "retry": Question is not aeronautic-relevant, restart question capture
+            
+        LLM Configuration
+        ----------------
+        - Model: Azure OpenAI GPT-4o
+        - Temperature: 0 (deterministic responses)
+        - Max Retries: 2 (robust error handling)
+        - API Version: From environment variable AZURE_API_VERSION
+        
+        Validation Logic
+        ---------------
+        Uses a system prompt defining the AI as an aeronautics expert and asks
+        for binary True/False validation of question relevance. Response parsing
+        is case-insensitive and searches for 'true' substring.
+        
+        Environment Dependencies
+        -----------------------
+        Requires AZURE_API_BASE, AZURE_API_KEY, MODEL, and AZURE_API_VERSION
+        environment variables for Azure OpenAI service connection.
+        
+        Notes
+        -----
+        This routing mechanism ensures the RAG system only processes relevant
+        queries, improving efficiency and result quality by filtering out
+        off-topic questions early in the pipeline.
+        """
+        llm = AzureChatOpenAI(
+            azure_deployment="gpt-4o",  # or your deployment
+        api_version=api_version,  # or your api version
+        temperature=0,
+        max_retries=2,
+        # other params...
+        ) 
+        print("Analyzing question")
+        messages=[
+                {"role": "system", "content": "You are an ethic expert"},
+                {"role": "user", "content": f"Is the following question ethical? Question: {self.state.question_input}. Answer only with 'True' or 'False'"}
+            ]
+        
+        res = llm.invoke(messages)
+        res = res.content.strip().lower()
+
+        if 'true' in res:
+            return "success-ethical"
+        else:
+            print("Question not ethical, please try again.")
+            return "retry"
+
+    @listen("success-ethical")
     def rag_analysis(self):
         """
         Execute RAG-based analysis using local aeronautic knowledge base.
@@ -344,9 +411,59 @@ class AeronauticRagFlow(Flow[AeronauticRagState]):
             .kickoff(inputs={"paper": aggregated,
                              })
         )
+        self.state.document = result.raw
         print(result.raw)
     
     @listen(aggregate_results)
+    def bias_check(self):
+        """
+        Execute bias checking on the generated document.
+        
+        Processes the final aggregated document through BiasCrew to identify
+        and mitigate any potential biases, ensuring the content is accurate,
+        balanced, and ethically sound.
+        
+        Crew Execution
+        -------------
+        - Crew: BiasCrew (bias_checker agent)
+        - Input: Generated document from DocCrew
+        - Processing: Bias analysis + content redaction
+        - Output: Bias-checked document in markdown format
+        
+        State Updates
+        -------------
+        Updates self.state.all_results with the bias-checked document output.
+        
+        Bias Checking Features
+        ----------------------
+        - Analyzes content for potential biases in tone, accuracy, and representation
+        - Provides a balanced perspective by identifying and mitigating biases
+        - Ensures ethical standards are maintained in the documentation
+        - Outputs a clean, bias-free markdown document
+        
+        Output Format
+        -------------
+        The bias-checked document includes:
+        - All original content with identified biases addressed
+        - Professional formatting and structure maintained
+        - No additional text or explanations outside of the redacted content
+        
+        Notes
+        -----
+        This stage enhances the integrity of the final document by ensuring
+        that all content is free from biases, promoting accuracy and ethical
+        standards in aeronautic documentation.
+        """
+        print("Starting bias check")
+        result = (
+            BiasCrew()
+            .crew()
+            .kickoff(inputs={"document": self.state.document,
+                             })
+        )
+        self.state.final_doc = result.raw
+    
+    @listen(bias_check)
     def plot_generation(self):
         """
         Generate and display flow execution visualization.
