@@ -1,0 +1,22 @@
+math_analysis_task:
+  description: >
+    Conduct a math analysis about {question}
+    Make sure is solvable with math and easy to understand and implement
+  expected_output: >
+    A mathematical explanation with formulas and steps to solve the problem about {question}
+  agent: mathematician
+
+programming_task:
+  description: >
+    Review the math analysis and create a code to solve the problem about {question}
+    Make sure the code is easy to understand and implement
+  expected_output: >
+    A class in python with tools and functions to solve the problem about {question}.
+    Format the code as a code block ready to be executed inside a functions with no extra text.
+    the format should be:
+    @tool("my_simple_tool")
+    def my_simple_tool(params):
+        # INSERT CODE HERE WITHOUT COMMENTS
+        return result
+    name the function my_simple_tool
+  agent: python_programmer

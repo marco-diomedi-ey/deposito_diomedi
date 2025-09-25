@@ -1,0 +1,9 @@
+analysis_task:
+  description: >
+    Conduct a thorough research about {question} to determine if it is math related or not.
+  expected_output: >
+    A boolean that indicates if the question is math related or not.
+    True if the question is math related, False otherwise.
+  agent: question_analyst
+
+

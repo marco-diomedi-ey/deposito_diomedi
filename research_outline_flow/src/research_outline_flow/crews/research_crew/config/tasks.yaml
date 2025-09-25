@@ -1,0 +1,18 @@
+web_research_task:
+  description: >
+    Conduct a thorough web research about each element in {bullet_point} about the {question} in the outline that don't have biases.
+    Make sure you find any interesting and relevant information given the context of the question
+  expected_output: >
+    A text in paragraph form with the most relevant information about each {bullet_point} that don't have biases.
+  agent: researcher
+
+elaborate_task:
+  description: >
+    Create a detailed document about all the {paragraphs} of all {bullet_point} created by the researcher.
+    Don't forget to include an introduction and a conclusion. Use headings and subheadings to organize the content.
+  expected_output: >
+    A markdown document with a detailed explanation of all the {paragraphs} of all {bullet_point} created by the researcher, 
+    with all information in paragraph form, including an introduction and a conclusion. 
+    Use all {paragraphs} to create the document.
+
+  agent: elaborate_maker

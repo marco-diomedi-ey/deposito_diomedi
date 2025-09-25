@@ -1,0 +1,6 @@
+execute_sum:
+  description: >
+    execute a sum operation between two numbers {a} and {b}
+  expected_output: >
+    The result of the sum operation between {a} and {b}.
+  agent: mathematician

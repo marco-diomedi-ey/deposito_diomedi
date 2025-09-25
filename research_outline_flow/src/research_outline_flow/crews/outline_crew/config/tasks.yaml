@@ -1,0 +1,24 @@
+outline_task:
+  description: >
+    Conduct a thorough research about {question}
+    Make sure you find any interesting and relevant information given.
+  expected_output: >
+    A list with 10 bullet points of the most relevant information about {question}
+  agent: outline_maker
+
+bias_check_task:
+  description: >
+    Analyze all bullet points in the outline for potential biases: {outline}
+    Consider various perspectives
+  expected_output: >
+    ONLY a valid JSON array with no additional text or explanations:
+    [
+      {
+        "name": "bullet point name",
+        "has_bias": true/false,
+        "reasoning_bias": "explanation"
+      }
+    ]
+    Do not add any text before or after the JSON.
+  agent: bias_checker
+
