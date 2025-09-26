@@ -102,7 +102,7 @@ class AeronauticRagFlow(Flow[AeronauticRagState]):
         The 'retry' parameter enables automatic restart when question validation
         determines that the input is not relevant to aeronautics.
         """
-        print("Starting the Aeronautic RAG Flow")
+        # print("Starting the Aeronautic RAG Flow")
 
     @listen(starting_procedure)
     def generate_question(self):
@@ -122,7 +122,7 @@ class AeronauticRagFlow(Flow[AeronauticRagState]):
         The captured question will be validated for aeronautic relevance in
         the next flow stage.
         """
-        print("Generating question")
+        # print("Generating question")
         question = input("Enter your question about aeronautics: ")
         self.state.question_input = question
 
@@ -173,7 +173,7 @@ class AeronauticRagFlow(Flow[AeronauticRagState]):
         max_retries=2,
         # other params...
         ) 
-        print("Analyzing question")
+        # print("Analyzing question")
         messages=[
                 {"role": "system", "content": "You are an expert in aeronautics."},
                 {"role": "user", "content": f"Is the following question relevant to aeronautics? Question: {self.state.question_input}. Answer only with 'True' or 'False'"}
@@ -236,7 +236,7 @@ class AeronauticRagFlow(Flow[AeronauticRagState]):
         max_retries=2,
         # other params...
         ) 
-        print("Analyzing question")
+        # print("Analyzing question")
         messages=[
                 {"role": "system", "content": "You are an ethic expert"},
                 {"role": "user", "content": f"Is the following question ethical? Question: {self.state.question_input}. Answer only with 'True' or 'False'"}
@@ -290,14 +290,14 @@ class AeronauticRagFlow(Flow[AeronauticRagState]):
         expertise. Results are complemented by web analysis in the next stage
         for comprehensive coverage.
         """
-        print("Starting RAG analysis")
+        # print("Starting RAG analysis")
         result = (
             AeronauticRagCrew()
             .crew()
             .kickoff(inputs={"question": self.state.question_input,
                              })
         )
-        print(result.raw)
+        # print(result.raw)
         self.state.rag_result = result.raw
     
     @listen(rag_analysis)
@@ -340,7 +340,7 @@ class AeronauticRagFlow(Flow[AeronauticRagState]):
         stage to provide comprehensive, multi-source answers with both local
         expertise and current external information.
         """
-        print("Web analysis")
+        # print("Web analysis")
         result = (
             WebCrew()
             .crew()
@@ -348,7 +348,7 @@ class AeronauticRagFlow(Flow[AeronauticRagState]):
                              })
         )
         self.state.web_result = result.raw
-        print(result.raw)
+        # print(result.raw)
         # Here you can add more processing of the rag_result if needed
     
     @listen(web_analysis)
@@ -402,7 +402,7 @@ class AeronauticRagFlow(Flow[AeronauticRagState]):
         producing a comprehensive, well-structured document that combines
         the best of local expertise and current external information.
         """
-        print("Aggregating results")
+        # print("Aggregating results")
         aggregated = f"RAG Result: {self.state.rag_result}\n\nWeb Result: {self.state.web_result}"
         self.state.all_results = aggregated
         result = (
@@ -412,7 +412,7 @@ class AeronauticRagFlow(Flow[AeronauticRagState]):
                              })
         )
         self.state.document = result.raw
-        print(result.raw)
+        # print(result.raw)
     
     @listen(aggregate_results)
     def bias_check(self):
@@ -454,7 +454,7 @@ class AeronauticRagFlow(Flow[AeronauticRagState]):
         that all content is free from biases, promoting accuracy and ethical
         standards in aeronautic documentation.
         """
-        print("Starting bias check")
+        # print("Starting bias check")
         result = (
             BiasCrew()
             .crew()
@@ -494,7 +494,7 @@ class AeronauticRagFlow(Flow[AeronauticRagState]):
         enabling users to understand the processing pipeline and verify correct
         routing and stage execution.
         """
-        print("Plotting the flow")
+        # print("Plotting the flow")
         self.plot()
 
 

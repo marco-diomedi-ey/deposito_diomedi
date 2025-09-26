@@ -59,5 +59,8 @@ autodoc_mock_imports = [
     'litellm',
     'sentence_transformers',
     'numpy',
-    'pandas'
+    'pandas',
+    'qdrant_client',
+    'qdrant_client.models',
+    'qdrant_client.http.models'
 ]
